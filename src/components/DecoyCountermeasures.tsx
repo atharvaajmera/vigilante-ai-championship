@@ -45,18 +45,18 @@ export default function DecoyCountermeasures({
         <div>
             {/* Header */}
             <div className="flex items-center gap-2 mb-2">
-                <Shield className="w-4 h-4 text-amber-400" />
-                <h3 className="text-[10px] font-mono text-green-500 tracking-wider">
+                <Shield className="w-5 h-5 text-amber-400" />
+                <h3 className="text-sm font-mono text-green-500 tracking-wider">
                     DECOY_COUNTERMEASURES
                 </h3>
             </div>
 
             {/* AI Suggestion Indicator */}
             {suggestedType && isCallActive && (
-                <div className="mb-2 p-1.5 border border-amber-600/50 bg-amber-950/20">
-                    <div className="flex items-center gap-1.5 text-[9px]">
-                        <Lightbulb className="w-3 h-3 text-amber-400" />
-                        <span className="text-amber-400/80 font-mono">
+                <div className="mb-2 p-2 border border-amber-600/50 bg-amber-950/20">
+                    <div className="flex items-center gap-2 text-xs">
+                        <Lightbulb className="w-4 h-4 text-amber-400" />
+                        <span className="text-amber-400/80 font-mono font-bold">
                             {suggestedType.toUpperCase().replace('_', ' ')}
                         </span>
                     </div>
@@ -67,22 +67,22 @@ export default function DecoyCountermeasures({
             <button
                 onClick={handleDeployDecoy}
                 disabled={!isCallActive}
-                className={`w-full py-2 px-3 font-mono text-[10px] border-2 transition-all mb-2 ${isDeployed
+                className={`w-full py-3 px-4 font-mono text-sm border-2 transition-all mb-2 font-bold ${isDeployed
                     ? 'border-amber-400 bg-amber-400/10 text-amber-400'
                     : isCallActive
                         ? 'border-green-500 text-green-500 hover:bg-green-500/10 cursor-pointer'
                         : 'border-gray-700 text-gray-600 cursor-not-allowed'
                     }`}
             >
-                <div className="flex items-center justify-center gap-1.5">
-                    <Zap className={`w-3 h-3 ${isDeployed ? 'animate-pulse' : ''}`} />
+                <div className="flex items-center justify-center gap-2">
+                    <Zap className={`w-4 h-4 ${isDeployed ? 'animate-pulse' : ''}`} />
                     <span>{isDeployed ? 'DEPLOYING...' : 'DEPLOY'}</span>
                 </div>
             </button>
 
             {/* Data Readout - Compact */}
             {currentDecoy && (
-                <div className="bg-black border border-green-900 p-2 font-mono text-[9px]">
+                <div className="bg-black border border-green-900 p-2 font-mono text-xs">
                     <div className="text-amber-400 truncate">
                         {currentDecoy.displayText}
                     </div>

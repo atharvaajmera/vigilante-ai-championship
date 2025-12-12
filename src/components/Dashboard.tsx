@@ -20,22 +20,22 @@ interface DashboardProps {
 
 const SCAM_TACTIC_INFO: Record<ScamTactic, { icon: React.ReactNode; description: string; color: string }> = {
     Urgency: {
-        icon: <AlertTriangle className="w-5 h-5" />,
+        icon: <AlertTriangle className="w-6 h-6" />,
         description: "Time pressure",
         color: "text-red-500"
     },
     Isolation: {
-        icon: <Lock className="w-5 h-5" />,
+        icon: <Lock className="w-6 h-6" />,
         description: "Keep on line",
         color: "text-red-500"
     },
     Authority: {
-        icon: <Shield className="w-5 h-5" />,
+        icon: <Shield className="w-6 h-6" />,
         description: "Impersonation",
         color: "text-red-500"
     },
     Threat: {
-        icon: <Skull className="w-5 h-5" />,
+        icon: <Skull className="w-6 h-6" />,
         description: "Fear tactics",
         color: "text-red-500"
     }
@@ -43,17 +43,17 @@ const SCAM_TACTIC_INFO: Record<ScamTactic, { icon: React.ReactNode; description:
 
 const GENUINE_INDICATOR_INFO: Record<GenuineIndicator, { icon: React.ReactNode; description: string; color: string }> = {
     Professional: {
-        icon: <CheckCircle className="w-5 h-5" />,
+        icon: <CheckCircle className="w-6 h-6" />,
         description: "Professional tone",
         color: "text-green-500"
     },
     "Legitimate Auth": {
-        icon: <Shield className="w-5 h-5" />,
+        icon: <Shield className="w-6 h-6" />,
         description: "Proper verification",
         color: "text-green-500"
     },
     "Calm Tone": {
-        icon: <PhoneCall className="w-5 h-5" />,
+        icon: <PhoneCall className="w-6 h-6" />,
         description: "No pressure",
         color: "text-green-500"
     }
@@ -94,18 +94,18 @@ export default function Dashboard({
                 <div className="fixed inset-0 breach-flash pointer-events-none z-40" />
             )}
 
-            <div className="max-w-7xl mx-auto p-3">
+            <div className="w-full px-4 py-3">
                 {/* Top Row: Score, Threat, Turns, Decoy */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     {/* Score Display */}
-                    <div className="bg-black border-2 border-green-500 p-3">
-                        <p className="text-[10px] text-green-500 font-mono tracking-widest mb-1">CREDITS</p>
+                    <div className="bg-black border-2 border-green-500 p-4">
+                        <p className="text-sm text-green-500 font-mono tracking-widest mb-2">CREDITS</p>
                         <div className="flex items-baseline gap-2">
-                            <h2 className="text-2xl font-bold font-mono text-green-500 text-glow">
+                            <h2 className="text-4xl font-bold font-mono text-green-500 text-glow">
                                 {score.toLocaleString()}
                             </h2>
                             {scoreChange !== 0 && (
-                                <span className={`text-sm font-mono ${scoreChange > 0 ? 'text-green-500 text-glow' : 'text-red-500 text-glow-red'
+                                <span className={`text-lg font-mono ${scoreChange > 0 ? 'text-green-500 text-glow' : 'text-red-500 text-glow-red'
                                     }`}>
                                     {scoreChange > 0 ? '+' : ''}{scoreChange}
                                 </span>
@@ -114,17 +114,17 @@ export default function Dashboard({
                     </div>
 
                     {/* Threat Matrix - Compact */}
-                    <div className="bg-black border-2 border-green-500 p-3">
+                    <div className="bg-black border-2 border-green-500 p-4">
                         <TrustMatrix threatLevel={threatLevel} />
                     </div>
 
                     {/* Turn Counter - Compact */}
-                    <div className="bg-black border-2 border-green-500 p-3">
+                    <div className="bg-black border-2 border-green-500 p-4">
                         <TurnCounter turnsUsed={turnsUsed} maxTurns={maxTurns} />
                     </div>
 
                     {/* Decoy Countermeasures - Compact */}
-                    <div className="bg-black border-2 border-green-500 p-3">
+                    <div className="bg-black border-2 border-green-500 p-4">
                         <DecoyCountermeasures
                             onDecoyDeployed={onDecoyDeployed}
                             isCallActive={true}
@@ -135,15 +135,15 @@ export default function Dashboard({
                 </div>
 
                 {/* Bottom Row: Tactics/Indicators */}
-                <div className="bg-black border-2 border-green-500 p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className={`w-3 h-3 ${callType === 'SCAM' ? 'text-red-500' : 'text-green-500'}`} />
-                        <h3 className="text-[10px] font-mono tracking-widest text-green-500">
+                <div className="bg-black border-2 border-green-500 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <AlertTriangle className={`w-4 h-4 ${callType === 'SCAM' ? 'text-red-500' : 'text-green-500'}`} />
+                        <h3 className="text-sm font-mono tracking-widest text-green-500">
                             {callType === 'SCAM' ? 'THREAT VECTORS' : 'VERIFICATION MARKERS'}
                         </h3>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {callType === 'SCAM'
                             ? (Object.keys(SCAM_TACTIC_INFO) as ScamTactic[]).map((tactic) => {
                                 const isDetected = detectedTactics.has(tactic);
@@ -151,7 +151,7 @@ export default function Dashboard({
                                 return (
                                     <div
                                         key={tactic}
-                                        className={`p-2 border transition-all duration-300 ${isDetected
+                                        className={`p-3 border transition-all duration-300 ${isDetected
                                             ? 'bg-red-900/20 border-red-500'
                                             : 'bg-black border-gray-700 opacity-40'
                                             }`}
@@ -159,7 +159,7 @@ export default function Dashboard({
                                         <div className={`flex flex-col items-center gap-1 ${isDetected ? 'text-red-500' : 'text-gray-600'
                                             }`}>
                                             {info.icon}
-                                            <p className="text-[9px] font-mono text-center uppercase">{tactic}</p>
+                                            <p className="text-sm font-mono text-center uppercase">{tactic}</p>
                                         </div>
                                     </div>
                                 );
@@ -170,7 +170,7 @@ export default function Dashboard({
                                 return (
                                     <div
                                         key={indicator}
-                                        className={`p-2 border transition-all duration-300 ${isDetected
+                                        className={`p-3 border transition-all duration-300 ${isDetected
                                             ? 'bg-green-900/20 border-green-500'
                                             : 'bg-black border-gray-700 opacity-40'
                                             }`}
@@ -178,7 +178,7 @@ export default function Dashboard({
                                         <div className={`flex flex-col items-center gap-1 ${isDetected ? 'text-green-500' : 'text-gray-600'
                                             }`}>
                                             {info.icon}
-                                            <p className="text-[9px] font-mono text-center uppercase">{indicator}</p>
+                                            <p className="text-sm font-mono text-center uppercase">{indicator}</p>
                                         </div>
                                     </div>
                                 );

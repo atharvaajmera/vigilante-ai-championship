@@ -20,15 +20,19 @@ const GENUINE_VOICES = [
 ];
 
 // Helper function to get random voice from array
-function getRandomVoice(voices: string[]): string {
+export function getRandomVoice(voices: string[]): string {
   return voices[Math.floor(Math.random() * voices.length)];
 }
+
+// Export voice arrays for use in persona generation
+export { SCAM_VOICES, GENUINE_VOICES };
 
 export async function speakText(
   text: string,
   callType: CallType = "SCAM",
   sentiment: "aggressive" | "professional" | "neutral" = "neutral",
-  customStability?: number
+  customStability?: number,
+  voiceId?: string // Optional specific voice ID
 ): Promise<void> {
   // Fallback to browser speech synthesis if ElevenLabs is not configured
   if (!ELEVENLABS_KEY || ELEVENLABS_KEY === "undefined") {
@@ -36,11 +40,12 @@ export async function speakText(
   }
 
   try {
-    // Select random voice from appropriate category for variety
-    const voiceId =
-      callType === "SCAM"
+    // Use provided voiceId or select random voice from appropriate category
+    const selectedVoiceId =
+      voiceId ||
+      (callType === "SCAM"
         ? getRandomVoice(SCAM_VOICES)
-        : getRandomVoice(GENUINE_VOICES);
+        : getRandomVoice(GENUINE_VOICES));
 
     // Use custom stability if provided, otherwise default based on call type
     const stability =
@@ -71,7 +76,7 @@ export async function speakText(
           };
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}/stream`,
       {
         method: "POST",
         headers: {

@@ -19,6 +19,7 @@ export interface GeneratedPersona {
   scam_goal: string;
   opening_line: string;
   voice_stability_setting: number; // 0.2-0.9
+  voice_id: string; // Persist voice across conversation
 }
 
 export interface AIResponse {

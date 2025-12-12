@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AIResponse, Scenario, GeneratedPersona } from "../types/game";
+import { SCAM_VOICES, GENUINE_VOICES, getRandomVoice } from "./elevenlabs";
 
-const GEMINI_KEY = import.meta.env.VITE_GEMINI_KEY_SECONDARY;
+const GEMINI_KEY = import.meta.env.VITE_GEMINI_KEY;
 
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 3000;
@@ -231,6 +232,11 @@ Return ONLY valid JSON (no markdown):
       throw new Error("Invalid persona structure - missing required fields");
     }
 
+    // Assign persistent voice ID for this conversation
+    persona.voice_id = persona.is_scam
+      ? getRandomVoice(SCAM_VOICES)
+      : getRandomVoice(GENUINE_VOICES);
+
     return persona;
   } catch {
     // Fallback persona with random SCAM/GENUINE
@@ -245,9 +251,12 @@ Return ONLY valid JSON (no markdown):
         ? "Verify account security by requesting full card number"
         : "Confirm appointment and update insurance information",
       opening_line: isScam
-        ? "Hello, this is David from SecureBank's fraud department. We've detected suspicious activity on your account."
-        : "Good afternoon, this is Sarah calling from City Medical Center regarding your upcoming appointment.",
-      voice_stability_setting: isScam ? 0.3 : 0.8,
+        ? "Hello, this is David from SecureBank Fraud Prevention. We've detected suspicious activity on your account."
+        : "Hi, this is Sarah calling from City Medical Center about your upcoming appointment.",
+      voice_stability_setting: isScam ? 0.3 : 0.85,
+      voice_id: isScam
+        ? getRandomVoice(SCAM_VOICES)
+        : getRandomVoice(GENUINE_VOICES),
     };
   }
 }

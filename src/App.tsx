@@ -42,10 +42,14 @@ OUTPUT FORMAT (valid JSON only):
   "terminal_log": "Technical analysis of user behavior",
   "threat_level": 0-100 (higher = more suspicious),
   "status": "active"|"terminated_success"|"system_breached",
-  "detected_tactic": null or tactic name,
+  "detected_tactic": ${persona.is_scam
+      ? '"Urgency"|"Isolation"|"Authority"|"Threat"|null (which tactic are you using THIS turn)'
+      : '"Professional"|"Legitimate Auth"|"Calm Tone"|null (which indicator are you showing THIS turn)'},
   "damage": 0 or 5000,
   "turn_action": "hook"|"escalate"|"isolate"|"threaten"|"ultimatum"
-}`;
+}
+
+IMPORTANT: In EVERY response, set "detected_tactic" to the PRIMARY ${persona.is_scam ? 'SCAM TACTIC' : 'GENUINE INDICATOR'} you are using in this specific turn. Don't leave it null unless absolutely necessary.`;
 
   return basePrompt;
 }
@@ -174,7 +178,8 @@ export default function App() {
         greeting,
         persona.is_scam ? 'SCAM' : 'GENUINE',
         'neutral',
-        persona.voice_stability_setting
+        persona.voice_stability_setting,
+        persona.voice_id
       );
 
       setGameState(prev => ({
@@ -303,12 +308,24 @@ export default function App() {
         lastAIMessage: aiResponse.speech
       });
 
-      // Speak the AI response with appropriate voice settings
-      await speakText(
-        aiResponse.speech,
-        gameState.currentScenario.type,
-        'neutral' // Default to neutral sentiment
-      );
+      // Show notification if scam succeeded
+      if (finalStatus === 'call_failure' && damage > 0) {
+        setTimeout(() => {
+          alert(`⚠️ SYSTEM BREACH DETECTED\n\n💸 $${damage.toLocaleString()} deducted from account\n📉 ${Math.abs(scoreChange)} credits lost\n\nThe scammer successfully extracted information!`);
+        }, 500);
+      }
+
+      // Only speak if call is still active, otherwise it ends immediately
+      if (finalStatus === 'active') {
+        // Speak the AI response with appropriate voice settings
+        await speakText(
+          aiResponse.speech,
+          gameState.currentScenario.type,
+          'neutral',
+          gameState.generatedPersona?.voice_stability_setting,
+          gameState.generatedPersona?.voice_id
+        );
+      }
 
     } catch (error) {
       if (error instanceof Error && error.message === "RATE_LIMIT_EXCEEDED") {

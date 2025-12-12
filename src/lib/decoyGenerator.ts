@@ -4,7 +4,9 @@ export interface DecoyData {
     | "ssn"
     | "bank_account"
     | "verification_code"
-    | "insurance_policy";
+    | "insurance_policy"
+    | "personal_info"
+    | "date_of_birth";
   displayText: string;
   rawData: {
     cardNumber?: string;
@@ -16,6 +18,11 @@ export interface DecoyData {
     code?: string;
     policyNumber?: string;
     groupNumber?: string;
+    fullName?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    age?: number;
   };
 }
 
@@ -94,6 +101,66 @@ function generateFakeInsurancePolicy(): { policy: string; group: string } {
   return { policy, group };
 }
 
+function generateFakeName(): {
+  firstName: string;
+  lastName: string;
+  fullName: string;
+} {
+  const firstNames = [
+    "James",
+    "Michael",
+    "Robert",
+    "John",
+    "David",
+    "William",
+    "Richard",
+    "Joseph",
+    "Mary",
+    "Patricia",
+    "Jennifer",
+    "Linda",
+    "Elizabeth",
+    "Barbara",
+    "Susan",
+    "Jessica",
+  ];
+  const lastNames = [
+    "Smith",
+    "Johnson",
+    "Williams",
+    "Brown",
+    "Jones",
+    "Garcia",
+    "Miller",
+    "Davis",
+    "Rodriguez",
+    "Martinez",
+    "Hernandez",
+    "Lopez",
+    "Gonzalez",
+    "Wilson",
+    "Anderson",
+    "Thomas",
+  ];
+
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  const fullName = `${firstName} ${lastName}`;
+
+  return { firstName, lastName, fullName };
+}
+
+function generateFakeDOB(): { dateOfBirth: string; age: number } {
+  // Generate DOB for someone between 25-65 years old
+  const age = Math.floor(Math.random() * 40) + 25;
+  const year = new Date().getFullYear() - age;
+  const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
+  const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
+  const dateOfBirth = `${month}/${day}/${year}`;
+
+  return { dateOfBirth, age };
+}
+
 export function suggestDecoyType(
   personaGoal: string,
   lastAIMessage?: string
@@ -101,6 +168,28 @@ export function suggestDecoyType(
   const context = `${personaGoal} ${lastAIMessage || ""}`.toLowerCase();
 
   // Priority order: match specific request first
+  if (
+    context.includes("name") ||
+    context.includes("full name") ||
+    context.includes("first name") ||
+    context.includes("last name") ||
+    context.includes("who am i speaking with") ||
+    context.includes("may i have your name")
+  ) {
+    return "personal_info";
+  }
+
+  if (
+    context.includes("date of birth") ||
+    context.includes("birthday") ||
+    context.includes("birth date") ||
+    context.includes("dob") ||
+    context.includes("age") ||
+    context.includes("when were you born")
+  ) {
+    return "date_of_birth";
+  }
+
   if (
     context.includes("insurance") ||
     context.includes("policy number") ||
@@ -158,11 +247,38 @@ export function generateDecoyData(specificType?: DecoyData["type"]): DecoyData {
     "bank_account",
     "verification_code",
     "insurance_policy",
+    "personal_info",
+    "date_of_birth",
   ];
   const randomType =
     specificType || types[Math.floor(Math.random() * types.length)];
 
   switch (randomType) {
+    case "personal_info": {
+      const name = generateFakeName();
+      return {
+        type: "personal_info",
+        displayText: `> DECOY_NAME: ${name.fullName}`,
+        rawData: {
+          fullName: name.fullName,
+          firstName: name.firstName,
+          lastName: name.lastName,
+        },
+      };
+    }
+
+    case "date_of_birth": {
+      const dob = generateFakeDOB();
+      return {
+        type: "date_of_birth",
+        displayText: `> DECOY_DOB: ${dob.dateOfBirth} (Age: ${dob.age})`,
+        rawData: {
+          dateOfBirth: dob.dateOfBirth,
+          age: dob.age,
+        },
+      };
+    }
+
     case "credit_card": {
       const cc = generateFakeCreditCard();
       return {
@@ -222,6 +338,10 @@ export function generateDecoyData(specificType?: DecoyData["type"]): DecoyData {
 
 export function formatDecoyForAI(decoy: DecoyData): string {
   switch (decoy.type) {
+    case "personal_info":
+      return `User provided name: ${decoy.rawData.fullName}`;
+    case "date_of_birth":
+      return `User provided date of birth: ${decoy.rawData.dateOfBirth} (age ${decoy.rawData.age})`;
     case "credit_card":
       return `User provided credit card: ${decoy.rawData.cardNumber}, expiry ${decoy.rawData.expiry}, CVV ${decoy.rawData.cvv}`;
     case "ssn":
