@@ -1,0 +1,93 @@
+import { useState, useMemo } from 'react';
+import { Shield, Zap, Lightbulb } from 'lucide-react';
+import { generateDecoyData, suggestDecoyType, type DecoyData } from '../lib/decoyGenerator';
+
+interface DecoyCountermeasuresProps {
+    onDecoyDeployed: (decoyText: string) => void;
+    isCallActive: boolean;
+    personaGoal?: string;
+    lastAIMessage?: string;
+}
+
+export default function DecoyCountermeasures({
+    onDecoyDeployed,
+    isCallActive,
+    personaGoal,
+    lastAIMessage
+}: DecoyCountermeasuresProps) {
+    const [currentDecoy, setCurrentDecoy] = useState<DecoyData | null>(null);
+    const [isDeployed, setIsDeployed] = useState(false);
+
+    // Compute suggested type based on persona goal and last AI message
+    const suggestedType = useMemo(() => {
+        if (personaGoal || lastAIMessage) {
+            return suggestDecoyType(personaGoal || '', lastAIMessage);
+        }
+        return null;
+    }, [personaGoal, lastAIMessage]);
+
+    const handleDeployDecoy = () => {
+        if (!isCallActive) return;
+
+        // Use suggested type if available, otherwise random
+        const decoy = generateDecoyData(suggestedType || undefined);
+        setCurrentDecoy(decoy);
+        setIsDeployed(true);
+
+        // Send formatted decoy data to parent
+        onDecoyDeployed(decoy.displayText);
+
+        // Reset deployed state after 2 seconds
+        setTimeout(() => setIsDeployed(false), 2000);
+    };
+
+    return (
+        <div>
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-2">
+                <Shield className="w-4 h-4 text-amber-400" />
+                <h3 className="text-[10px] font-mono text-green-500 tracking-wider">
+                    DECOY_COUNTERMEASURES
+                </h3>
+            </div>
+
+            {/* AI Suggestion Indicator */}
+            {suggestedType && isCallActive && (
+                <div className="mb-2 p-1.5 border border-amber-600/50 bg-amber-950/20">
+                    <div className="flex items-center gap-1.5 text-[9px]">
+                        <Lightbulb className="w-3 h-3 text-amber-400" />
+                        <span className="text-amber-400/80 font-mono">
+                            {suggestedType.toUpperCase().replace('_', ' ')}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {/* Deploy Button */}
+            <button
+                onClick={handleDeployDecoy}
+                disabled={!isCallActive}
+                className={`w-full py-2 px-3 font-mono text-[10px] border-2 transition-all mb-2 ${isDeployed
+                    ? 'border-amber-400 bg-amber-400/10 text-amber-400'
+                    : isCallActive
+                        ? 'border-green-500 text-green-500 hover:bg-green-500/10 cursor-pointer'
+                        : 'border-gray-700 text-gray-600 cursor-not-allowed'
+                    }`}
+            >
+                <div className="flex items-center justify-center gap-1.5">
+                    <Zap className={`w-3 h-3 ${isDeployed ? 'animate-pulse' : ''}`} />
+                    <span>{isDeployed ? 'DEPLOYING...' : 'DEPLOY'}</span>
+                </div>
+            </button>
+
+            {/* Data Readout - Compact */}
+            {currentDecoy && (
+                <div className="bg-black border border-green-900 p-2 font-mono text-[9px]">
+                    <div className="text-amber-400 truncate">
+                        {currentDecoy.displayText}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

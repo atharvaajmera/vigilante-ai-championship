@@ -1,0 +1,12 @@
+version: "1.0"
+name: "vigilante-voice-defense"
+region: "us-east-1"
+services:
+  - name: scenario-engine
+    runtime: node:18
+    handler: src/main.handler
+    environment:
+      GEMINI_MODEL: "gemini-robotics-er-1.5-preview"
+resources:
+  - name: user_scores
+    type: smart-memory
