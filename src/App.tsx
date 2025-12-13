@@ -140,7 +140,7 @@ export default function App() {
         playRing(); // Play immediately
         intervalId = window.setInterval(playRing, 4000); // Repeat every 4 seconds (2s ring + 2s pause)
 
-      } catch (err) {
+      } catch  {
         // Ignore ringtone creation errors
       }
     }
@@ -189,7 +189,7 @@ export default function App() {
           `${persona.persona_name}: ${greeting}`
         ]
       }));
-    } catch (error) {
+    } catch {
       // Ignore greeting errors
     } finally {
       setIsProcessing(false);
@@ -337,6 +337,7 @@ export default function App() {
     } finally {
       setIsProcessing(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing, stopListening, gameState]);
 
   // Check if browser supports speech recognition

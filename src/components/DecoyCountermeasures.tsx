@@ -80,10 +80,10 @@ export default function DecoyCountermeasures({
                 </div>
             </button>
 
-            {/* Data Readout - Compact */}
+            {/* Data Readout - Responsive */}
             {currentDecoy && (
                 <div className="bg-black border border-green-900 p-2 font-mono text-xs">
-                    <div className="text-amber-400 truncate">
+                    <div className="text-amber-400 break-all leading-relaxed">
                         {currentDecoy.displayText}
                     </div>
                 </div>
